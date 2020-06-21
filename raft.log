@@ -1,0 +1,31 @@
+2020-06-22 02:24:27.619 [(Raft [role=FOLLOWER, id=1])] INFO com.shz.gift.Raft - New role: CANDIDATE
+2020-06-22 02:24:27.619 [(Raft [role=FOLLOWER, id=2])] INFO com.shz.gift.Raft - New role: CANDIDATE
+2020-06-22 02:24:27.619 [(Raft [role=FOLLOWER, id=0])] INFO com.shz.gift.Raft - New role: CANDIDATE
+2020-06-22 02:24:27.619 [(Raft [role=FOLLOWER, id=2])] INFO com.shz.gift.Raft - Setting new electiontime: 1592776472551 Raft [role=CANDIDATE, id=2]
+2020-06-22 02:24:27.619 [(Raft [role=FOLLOWER, id=1])] INFO com.shz.gift.Raft - Setting new electiontime: 1592776468564 Raft [role=CANDIDATE, id=1]
+2020-06-22 02:24:27.619 [(Raft [role=FOLLOWER, id=0])] INFO com.shz.gift.Raft - Setting new electiontime: 1592776469202 Raft [role=CANDIDATE, id=0]
+2020-06-22 02:24:28.566 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.Raft - Setting new electiontime: -1 Raft [role=CANDIDATE, id=1]
+2020-06-22 02:24:28.567 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.LeaderFailoverTest - Sending: RequestForVote [term=1, lastLogIndex=-1, lastLogTerm=0] to Raft [role=CANDIDATE, id=0]
+2020-06-22 02:24:28.568 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.LeaderFailoverTest - Sending: RequestForVote [term=1, lastLogIndex=-1, lastLogTerm=0] to Raft [role=CANDIDATE, id=2]
+2020-06-22 02:24:28.568 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.Raft - setting voted for: 1: Raft [role=CANDIDATE, id=1]
+2020-06-22 02:24:28.568 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.Raft - vote received: com.shz.gift.protocol.VoteGranted@3c30b5a5 Raft [role=CANDIDATE, id=1]
+2020-06-22 02:24:28.569 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.Raft - Starting election for: 1
+2020-06-22 02:24:28.576 [(Raft [role=CANDIDATE, id=0])] INFO com.shz.gift.Raft - Setting new electiontime: -1 Raft [role=CANDIDATE, id=0]
+2020-06-22 02:24:28.576 [(Raft [role=CANDIDATE, id=0])] INFO com.shz.gift.Raft - New role: FOLLOWER
+2020-06-22 02:24:28.577 [(Raft [role=CANDIDATE, id=0])] INFO com.shz.gift.Raft - setting voted for: 1: Raft [role=FOLLOWER, id=0]
+2020-06-22 02:24:28.577 [(Raft [role=CANDIDATE, id=0])] INFO com.shz.gift.RaftEventQueue - Voted for: RequestForVote [term=1, lastLogIndex=-1, lastLogTerm=0]
+2020-06-22 02:24:28.577 [(Raft [role=CANDIDATE, id=0])] INFO com.shz.gift.LeaderFailoverTest - Sending: com.shz.gift.protocol.VoteGranted@6b3b6ef9 to Raft [role=CANDIDATE, id=1]
+2020-06-22 02:24:28.577 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.Raft - vote received: com.shz.gift.protocol.VoteGranted@6b3b6ef9 Raft [role=CANDIDATE, id=1]
+2020-06-22 02:24:28.577 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.Raft - New role: LEADER
+2020-06-22 02:24:28.577 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.Raft - Becoming leader: Raft [role=LEADER, id=1] in term=1
+2020-06-22 02:24:28.580 [(Raft [role=CANDIDATE, id=2])] INFO com.shz.gift.Raft - Setting new electiontime: -1 Raft [role=CANDIDATE, id=2]
+2020-06-22 02:24:28.580 [(Raft [role=CANDIDATE, id=2])] INFO com.shz.gift.Raft - New role: FOLLOWER
+2020-06-22 02:24:28.581 [(Raft [role=CANDIDATE, id=2])] INFO com.shz.gift.Raft - setting voted for: 1: Raft [role=FOLLOWER, id=2]
+2020-06-22 02:24:28.581 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.LeaderFailoverTest - Sending: AppendRequest [index=0, term=1, previousIndex=0, previousTerm=0, commitIndex=0, ] to Raft [role=FOLLOWER, id=0]
+2020-06-22 02:24:28.581 [(Raft [role=CANDIDATE, id=2])] INFO com.shz.gift.RaftEventQueue - Voted for: RequestForVote [term=1, lastLogIndex=-1, lastLogTerm=0]
+2020-06-22 02:24:28.581 [(Raft [role=CANDIDATE, id=2])] INFO com.shz.gift.LeaderFailoverTest - Sending: com.shz.gift.protocol.VoteGranted@43e7279d to Raft [role=LEADER, id=1]
+2020-06-22 02:24:28.581 [(Raft [role=CANDIDATE, id=1])] INFO com.shz.gift.LeaderFailoverTest - Sending: AppendRequest [index=0, term=1, previousIndex=0, previousTerm=0, commitIndex=0, ] to Raft [role=FOLLOWER, id=2]
+2020-06-22 02:24:28.586 [(Raft [role=FOLLOWER, id=2])] INFO com.shz.gift.Raft - append: AppendRequest [index=0, term=1, previousIndex=0, previousTerm=0, commitIndex=0, ]
+2020-06-22 02:24:28.586 [(Raft [role=FOLLOWER, id=2])] INFO com.shz.gift.RaftEventQueue - ping received: i=0 t=1 Raft [role=FOLLOWER, id=2]
+2020-06-22 02:24:28.599 [(Raft [role=FOLLOWER, id=0])] INFO com.shz.gift.Raft - append: AppendRequest [index=0, term=1, previousIndex=0, previousTerm=0, commitIndex=0, ]
+2020-06-22 02:24:28.599 [(Raft [role=FOLLOWER, id=0])] INFO com.shz.gift.RaftEventQueue - ping received: i=0 t=1 Raft [role=FOLLOWER, id=0]
