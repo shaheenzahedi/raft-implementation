@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Term {
 
+
 	private AtomicLong term = new AtomicLong();
 	
 	public long getCurrent() {
