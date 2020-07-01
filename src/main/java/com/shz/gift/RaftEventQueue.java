@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 public class RaftEventQueue implements RaftListener, Handler<RaftEvent> {
 
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private Raft raft;
 

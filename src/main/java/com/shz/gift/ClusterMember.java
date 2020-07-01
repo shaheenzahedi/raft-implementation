@@ -17,5 +17,5 @@ public interface ClusterMember {
 
 	public long getLastCommandReceived();
 	
-	public void setLastcommandReceived(long time);
+	public void setLastCommandReceived(long time);
 }

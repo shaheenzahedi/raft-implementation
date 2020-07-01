@@ -6,25 +6,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class QueueTask<E> implements Runnable {
 
-	private Logger logger;
+
+	private final Queue<E> queue = new LinkedBlockingQueue<>();
 	
-	private Queue<E> queue = new LinkedBlockingQueue<>();
+	private final AtomicBoolean running = new AtomicBoolean(false);
 	
-	private AtomicBoolean running = new AtomicBoolean(false);
+	private final Lock lock = new ReentrantLock();
 	
-	private Lock lock = new ReentrantLock();
-	
-	private Handler<E> handler;
+	private final Handler<E> handler;
 	
 	public QueueTask(Handler<E> handler) {
 		super();
 		this.handler = handler;
-		logger = LoggerFactory.getLogger(handler.getClass());
 	}
 
 
@@ -51,7 +47,7 @@ public class QueueTask<E> implements Runnable {
 			try {
 				handler.handleEvent(o);
 			} catch (Exception e) {
-				logger.error("Failed to handle: " + o + ": " + e, e);
+				System.err.println("Failed to handle: " + o + ": " + e);
 			}			
 		}
 	}
