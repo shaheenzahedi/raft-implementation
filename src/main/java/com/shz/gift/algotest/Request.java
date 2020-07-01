@@ -1,12 +1,12 @@
-package com.shz.gift.stubs;
+package com.shz.gift.algotest;
 
-import com.shz.gift.Raft;
+import com.shz.gift.preps.Raft;
 import com.shz.gift.protocol.ClientResponse;
-import com.shz.gift.protocol.MessageChannel;
+import com.shz.gift.protocol.IMsg;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Request implements MessageChannel {
+public class Request implements IMsg {
 
     private final AtomicInteger successCounter;
     private final AtomicInteger errCounter;

@@ -1,7 +1,7 @@
 package com.shz.gift;
 
 
-
+import com.shz.gift.algotest.Trigger;
 
 public class Main {
 

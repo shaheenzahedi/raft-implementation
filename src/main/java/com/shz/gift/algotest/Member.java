@@ -1,6 +1,6 @@
-package com.shz.gift.stubs;
+package com.shz.gift.algotest;
 
-import com.shz.gift.RaftEventQueue;
+import com.shz.gift.preps.RaftEventQueue;
 
 import java.util.ArrayList;
 import java.util.List;

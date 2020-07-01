@@ -1,4 +1,4 @@
-package com.shz.gift;
+package com.shz.gift.algotest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,12 +8,14 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.shz.gift.preps.IMember;
+import com.shz.gift.preps.Raft;
+import com.shz.gift.preps.RaftEventQueue;
 import com.shz.gift.executor.SequentialExecutor;
+import com.shz.gift.log.LogImpl;
 import com.shz.gift.protocol.ClientRequest;
-import com.shz.gift.stubs.HashSetCommits;
-import com.shz.gift.stubs.Member;
-import com.shz.gift.stubs.RemoteStub;
-import com.shz.gift.stubs.Request;
+import com.shz.gift.utils.ElectionLogic;
+import com.shz.gift.utils.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +51,7 @@ public class Trigger {
         }
 
         for (Member m : members) {
-            List<ClusterMember> remoteMembers = new ArrayList<>();
+            List<IMember> remoteMembers = new ArrayList<>();
             for (Member remoteMember : members) {
                 if (m != remoteMember) {
                     RemoteStub ms = new RemoteStub(remoteMember.getRaftListener(), logger, executor);
@@ -102,7 +104,7 @@ public class Trigger {
         }
         leader = getLeader(null);
         assert leader != null;
-        HashSetCommits commits = (HashSetCommits) ((LogImpl) leader.getRaftListener().getRaft().getLog()).getHandler();
+        HashSetCommits commits = (HashSetCommits) ((LogImpl) leader.getRaftListener().getRaft().getILog()).getHandler();
         for (Request r : requests) {
             if (!commits.getCommitSet().contains(r.getPayload())) System.out.println();
             assert r.getErr() != 0 || commits.getCommitSet().contains(r.getPayload()) : "" + r.getErr() + " missing: " + r.getPayload();

@@ -11,7 +11,7 @@ public class AppendRequest {
 	private long previousTerm;
 	private long commitIndex;
 	private Object payload;
-	private transient MessageChannel clientChannel;
+	private transient IMsg clientChannel;
 	
 	public AppendRequest() {
 		super();
@@ -31,7 +31,7 @@ public class AppendRequest {
 
 	public AppendRequest(long logTerm, long index, long leaderTerm, long previousIndex,
 			long previousTerm, long commitIndex, Object payload,
-			MessageChannel clientChannel) {
+			IMsg clientChannel) {
 		super();
 		this.logTerm = logTerm;
 		this.index = index;
@@ -72,7 +72,7 @@ public class AppendRequest {
 	}
 
 	@JsonIgnore
-	public MessageChannel getClientChannel() {
+	public IMsg getClientChannel() {
 		return clientChannel;
 	}
 

@@ -1,8 +1,8 @@
-package com.shz.gift.stubs;
+package com.shz.gift.algotest;
 
-import com.shz.gift.ClusterMember;
-import com.shz.gift.Raft;
-import com.shz.gift.RaftEventQueue;
+import com.shz.gift.preps.IMember;
+import com.shz.gift.preps.Raft;
+import com.shz.gift.preps.RaftEventQueue;
 import com.shz.gift.protocol.*;
 import org.slf4j.Logger;
 
@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class RemoteStub implements ClusterMember {
+public class RemoteStub implements IMember {
 
     private final ScheduledExecutorService executor;
     private final Logger logger;
@@ -23,7 +23,7 @@ public class RemoteStub implements ClusterMember {
 
     private final RaftEventQueue raftListener;
 
-    private final MessageChannel channel = new ChannelStub();
+    private final IMsg channel = new ChannelStub();
 
     private long index;
     private long match;
@@ -48,7 +48,7 @@ public class RemoteStub implements ClusterMember {
     }
 
     @Override
-    public MessageChannel getChannel() {
+    public IMsg getChannel() {
         return channel;
     }
 
@@ -80,7 +80,7 @@ public class RemoteStub implements ClusterMember {
         this.routeBack = routeBack;
     }
 
-    private class ChannelStub implements MessageChannel {
+    private class ChannelStub implements IMsg {
 
         @Override
         public void send(final Raft source, final Object o) {

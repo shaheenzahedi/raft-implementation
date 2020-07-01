@@ -1,6 +1,5 @@
-package com.shz.gift.stubs;
+package com.shz.gift.algotest;
 
-import com.shz.gift.example.RespondingCommitHandler;
 import com.shz.gift.protocol.AppendRequest;
 
 import java.util.HashSet;

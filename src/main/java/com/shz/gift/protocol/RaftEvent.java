@@ -1,6 +1,6 @@
 package com.shz.gift.protocol;
 
-import com.shz.gift.ClusterMember;
+import com.shz.gift.preps.IMember;
 
 public class RaftEvent {
 
@@ -14,22 +14,22 @@ public class RaftEvent {
 		;
 	}
 	
-	private ClusterMember source;
+	private IMember source;
 	
-	private MessageChannel clientSource;
+	private IMsg clientSource;
 	
 	private EventType type;
 	
 	private Object event;
 
-	public RaftEvent(ClusterMember source, EventType type, Object event) {
+	public RaftEvent(IMember source, EventType type, Object event) {
 		super();
 		this.source = source;
 		this.type = type;
 		this.event = event;
 	}
 
-	public RaftEvent(MessageChannel clientSource, EventType type, Object event) {
+	public RaftEvent(IMsg clientSource, EventType type, Object event) {
 		super();
 		this.clientSource = clientSource;
 		this.type = type;
@@ -38,7 +38,7 @@ public class RaftEvent {
 
 
 
-	public ClusterMember getSource() {
+	public IMember getSource() {
 		return source;
 	}
 
@@ -50,7 +50,7 @@ public class RaftEvent {
 		return event;
 	}
 
-	public MessageChannel getClientSource() {
+	public IMsg getClientSource() {
 		return clientSource;
 	}
 
