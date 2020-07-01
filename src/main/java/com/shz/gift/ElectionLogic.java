@@ -17,9 +17,9 @@ public class ElectionLogic {
 	
 	public static long DEFAULT_STALE_MEMBER_TIMEOUT = DEFAULT_LEADER_TIMEOUT;
 	
-	private Random random = new Random();
+	private final Random random = new Random();
 	
-	private Logger logger = LoggerFactory.getLogger(Raft.class);
+	private final Logger logger = LoggerFactory.getLogger(Raft.class);
 	
 	private Election election;
 
@@ -27,13 +27,13 @@ public class ElectionLogic {
 
 	private long leaderTimestamp = System.currentTimeMillis();
 	
-	private long leaderTimeout = DEFAULT_LEADER_TIMEOUT;
+	private final long leaderTimeout = DEFAULT_LEADER_TIMEOUT;
 	
     private long electionTime = -1L;
     
     private long electionEnd = -1L;
 
-    private Raft raft;
+    private final Raft raft;
     
     public ElectionLogic(Raft raft) {
 		super();
@@ -80,7 +80,7 @@ public class ElectionLogic {
 		for (ClusterMember m : raft.getMembers()) {
 			m.setNextIndex(raft.getLog().getLastIndex() + 1);
 			m.setMatchIndex(0L);
-			m.setLastcommandReceived(System.currentTimeMillis());//new leader didn't receive any command, don't fill backlog write away
+			m.setLastCommandReceived(System.currentTimeMillis());//new leader didn't receive any command, don't fill backlog write away
 		}
 		raft.leaderLoop();//starts sending log
 	}

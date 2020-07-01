@@ -12,17 +12,17 @@ import org.slf4j.LoggerFactory;
 public class Raft {
 
 	
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private List<ClusterMember> members = new ArrayList<ClusterMember>();
+	private final List<ClusterMember> members = new ArrayList<>();
 
 	private Role role = Role.FOLLOWER;
 	
-	private Term term = new Term();
+	private final Term term = new Term();
 
-	private Log log = new LogImpl(term);
+	private final Log log = new LogImpl(term);
 	
-	private ElectionLogic election = new ElectionLogic(this);
+	private final ElectionLogic election = new ElectionLogic(this);
 
 	private String id;
 	
@@ -54,7 +54,7 @@ public class Raft {
 				logger.info("Filling backlog for: " + m + " " + m.getNextIndex() + " " + log.getLastIndex());
 				m.setNextIndex(log.getLastIndex());
 				m.getChannel().send(this, copy(log.get(m.getNextIndex())));
-				m.setLastcommandReceived(System.currentTimeMillis());//start backlog process only once per timeout
+				m.setLastCommandReceived(System.currentTimeMillis());//start backlog process only once per timeout
 			} else {
 				//ping
 				if (log.getLastIndex() < 0) {
@@ -141,7 +141,7 @@ public class Raft {
 			return;
 		}
 		
-		member.setLastcommandReceived(System.currentTimeMillis());
+		member.setLastCommandReceived(System.currentTimeMillis());
 		
 		if (event.isSuccess()) {
 			if (member.getNextIndex() <= event.getEntryIndex()) {

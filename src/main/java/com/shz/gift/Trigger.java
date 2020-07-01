@@ -14,9 +14,11 @@ import com.shz.gift.stubs.HashSetCommits;
 import com.shz.gift.stubs.Member;
 import com.shz.gift.stubs.RemoteStub;
 import com.shz.gift.stubs.Request;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Trigger {
+    Logger logger;
 
     private final ScheduledExecutorService executor = new SequentialExecutor(new ScheduledThreadPoolExecutor(10));
 
@@ -32,6 +34,11 @@ public class Trigger {
         ElectionLogic.PING_LOOP = 100L;
         ElectionLogic.DEFAULT_STALE_MEMBER_TIMEOUT = 1000L;
 
+        System.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
+        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
+        System.setProperty("org.slf4j.simpleLogger.dateTimeFormat", "yyyy-MM-dd HH:mm:ss.SSS");
+        System.setProperty("org.slf4j.simpleLogger.logFile", "raft.log");
+        logger = LoggerFactory.getLogger(getClass());
         for (int i = 0; i < 3; i++) {
             Raft r = new Raft();
             r.setId("" + i);
@@ -45,7 +52,7 @@ public class Trigger {
             List<ClusterMember> remoteMembers = new ArrayList<>();
             for (Member remoteMember : members) {
                 if (m != remoteMember) {
-                    RemoteStub ms = new RemoteStub(remoteMember.getRaftListener(), executor);
+                    RemoteStub ms = new RemoteStub(remoteMember.getRaftListener(), logger, executor);
                     remoteMembers.add(ms);
                     m.getRemotes().add(ms);
                 }
@@ -66,7 +73,7 @@ public class Trigger {
 
         Member leader = null;
         List<Request> requests = new ArrayList<>();
-        int i = 0;
+        int i;
         for (i = 0; i < 3000; i++) {
             chaos();
             leader = getLeader(leader);
@@ -115,14 +122,9 @@ public class Trigger {
             System.out.println("stopping: " + m.getRaftListener().getRaft());
             m.getRaftListener().stop();
             long time = 1;
-            executor.schedule(new Runnable() {
-
-                @Override
-                public void run() {
-                    System.out.println("starting: " + m.getRaftListener().getRaft());
-                    m.getRaftListener().init();
-
-                }
+            executor.schedule(() -> {
+                System.out.println("starting: " + m.getRaftListener().getRaft());
+                m.getRaftListener().init();
 
             }, random.nextInt(6000) + time, TimeUnit.MILLISECONDS);
         }

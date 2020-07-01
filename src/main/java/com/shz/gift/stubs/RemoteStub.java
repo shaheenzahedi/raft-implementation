@@ -4,6 +4,7 @@ import com.shz.gift.ClusterMember;
 import com.shz.gift.Raft;
 import com.shz.gift.RaftEventQueue;
 import com.shz.gift.protocol.*;
+import org.slf4j.Logger;
 
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class RemoteStub implements ClusterMember {
 
     private final ScheduledExecutorService executor;
+    private final Logger logger;
     private RemoteStub routeBack;
     private final Random random = new Random();
 
@@ -28,10 +30,11 @@ public class RemoteStub implements ClusterMember {
 
     private long lastCmd = System.currentTimeMillis();
 
-    public RemoteStub(RaftEventQueue raftListener, ScheduledExecutorService executor) {
+    public RemoteStub(RaftEventQueue raftListener, Logger logger, ScheduledExecutorService executor) {
         super();
         this.raftListener = raftListener;
         this.executor = executor;
+        this.logger = logger;
     }
 
     @Override
@@ -94,12 +97,7 @@ public class RemoteStub implements ClusterMember {
                 AppendResponse resp = (AppendResponse) o;
                 raftListener.appendResponse(routeBack, resp);
             } else if (o instanceof RequestForVote) {
-                executor.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        raftListener.vote(routeBack, (RequestForVote) o);
-                    }
-                }, random.nextInt(delay) + 1, TimeUnit.MILLISECONDS);
+                executor.schedule(() -> raftListener.vote(routeBack, (RequestForVote) o), random.nextInt(delay) + 1, TimeUnit.MILLISECONDS);
             } else if (o instanceof VoteGranted) {
                 VoteGranted r = (VoteGranted) o;
                 raftListener.voteReceived(routeBack, r);
