@@ -3,7 +3,7 @@ package com.shz.gift.utils;
 import java.util.Random;
 
 import com.shz.gift.preps.IMember;
-import com.shz.gift.preps.Raft;
+import com.shz.gift.preps.Algo;
 import com.shz.gift.protocol.RequestForVote;
 import com.shz.gift.protocol.VoteGranted;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ public class ElectionLogic {
 	
 	private final Random random = new Random();
 	
-	private final Logger logger = LoggerFactory.getLogger(Raft.class);
+	private final Logger logger = LoggerFactory.getLogger(Algo.class);
 	
 	private Election election;
 
@@ -35,26 +35,26 @@ public class ElectionLogic {
     
     private long electionEnd = -1L;
 
-    private final Raft raft;
+    private final Algo algo;
     
-    public ElectionLogic(Raft raft) {
+    public ElectionLogic(Algo algo) {
 		super();
-		this.raft = raft;
+		this.algo = algo;
 	}
 
 
 	public void voteReceived(VoteGranted vote) {
-		logger.info("vote received: " + vote + " " + raft);
-		if (raft.getRole() != Role.CANDIDATE) {
+		logger.info("vote received: " + vote + " " + algo);
+		if (algo.getRole() != Role.CANDIDATE) {
 			return;
 		}
-		if (vote.getTerm() == raft.getTerm().getCurrent()) {
+		if (vote.getTerm() == algo.getTerm().getCurrent()) {
 			election.incrementVotes();
 			if (election.hasWon()) {
 				election = null;
-				raft.changeRole(Role.LEADER);
-				logger.info("Becoming leader: " + raft + " in term=" + raft.getTerm().getCurrent());
-				System.out.println("Becoming leader: " + raft + " in term=" + raft.getTerm().getCurrent());
+				algo.changeRole(Role.LEADER);
+				logger.info("Becoming leader: " + algo + " in term=" + algo.getTerm().getCurrent());
+				System.out.println("Becoming leader: " + algo + " in term=" + algo.getTerm().getCurrent());
 				initLeader();
 			}
 		} else {
@@ -64,7 +64,7 @@ public class ElectionLogic {
 	
 
 	public void setElectionTime(long electionTime) {
-		logger.info("Setting new electiontime: " + electionTime + " " + raft);				
+		logger.info("Setting new electiontime: " + electionTime + " " + algo);
 		this.electionTime = electionTime;
 	}
 
@@ -74,17 +74,17 @@ public class ElectionLogic {
 		electionEnd = -1L;
 		setElectionTime(-1L);
 		election = null;
-		raft.changeRole(Role.FOLLOWER);
+		algo.changeRole(Role.FOLLOWER);
 	}
 
 
 	private void initLeader() {
-		for (IMember m : raft.getMembers()) {
-			m.setNextIndex(raft.getILog().getLastIndex() + 1);
+		for (IMember m : algo.getMembers()) {
+			m.setNextIndex(algo.getILog().getLastIndex() + 1);
 			m.setMatchIndex(0L);
 			m.setLastCommandReceived(System.currentTimeMillis());//new leader didn't receive any command, don't fill backlog write away
 		}
-		raft.leaderLoop();//starts sending log
+		algo.leaderLoop();//starts sending log
 	}
 
 
@@ -94,7 +94,7 @@ public class ElectionLogic {
 		}
 		long time = System.currentTimeMillis();
 		if (leaderTimeout < (time - leaderTimestamp)) {
-			raft.changeRole(Role.CANDIDATE);
+			algo.changeRole(Role.CANDIDATE);
 			electionEnd = -1L;
 			long rdiff = random.nextInt((int)DEFAULT_ELECTION_TIMEOUT) + 1;
 			setElectionTime(time + rdiff);
@@ -106,16 +106,16 @@ public class ElectionLogic {
 		long time = System.currentTimeMillis();
 		if (electionTime <= time) {
 			setElectionTime(-1L);
-			this.raft.getTerm().newTerm();
-			this.election = new Election(raft.getMembers().size() + 1, this.raft.getTerm().getCurrent());
-			for (IMember m : raft.getMembers()) {
-				m.getChannel().send(raft, new RequestForVote(this.raft.getTerm().getCurrent(), raft.getILog().getLastIndex(), raft.getILog().getLastTerm()));
+			this.algo.getTerm().newTerm();
+			this.election = new Election(algo.getMembers().size() + 1, this.algo.getTerm().getCurrent());
+			for (IMember m : algo.getMembers()) {
+				m.getChannel().send(algo, new RequestForVote(this.algo.getTerm().getCurrent(), algo.getILog().getLastIndex(), algo.getILog().getLastTerm()));
 			}
-			if (vote(null, new RequestForVote(this.raft.getTerm().getCurrent(), raft.getILog().getLastIndex(), raft.getILog().getLastTerm()))) {
-				voteReceived(new VoteGranted(this.raft.getTerm().getCurrent()));				
+			if (vote(null, new RequestForVote(this.algo.getTerm().getCurrent(), algo.getILog().getLastIndex(), algo.getILog().getLastTerm()))) {
+				voteReceived(new VoteGranted(this.algo.getTerm().getCurrent()));
 			}
 			this.electionEnd = time + DEFAULT_ELECTION_TIMEOUT;
-			logger.info("Starting election for: " + this.raft.getTerm().getCurrent());
+			logger.info("Starting election for: " + this.algo.getTerm().getCurrent());
 			return DEFAULT_ELECTION_TIMEOUT;
 		} else {
 			return electionTime - time;
@@ -136,31 +136,31 @@ public class ElectionLogic {
 	}
 
 	public boolean vote(IMember IMember, RequestForVote vote) {
-		long currentTerm = raft.getTerm().getCurrent();
+		long currentTerm = algo.getTerm().getCurrent();
 		if (vote.getTerm() > currentTerm) {
-			raft.getTerm().setCurrent(vote.getTerm());
-			if (raft.getRole() != Role.FOLLOWER) {
+			algo.getTerm().setCurrent(vote.getTerm());
+			if (algo.getRole() != Role.FOLLOWER) {
 				setFollower();
 			}
 		}
 		if (vote.getTerm() < currentTerm) {
-			logger.info("vote.getTerm() < raft.getTerm().getCurrent(): "  + raft);
+			logger.info("vote.getTerm() < raft.getTerm().getCurrent(): "  + algo);
 			return false;
 		}
 		if (votedForTerm >= vote.getTerm()) {
-			logger.info("votedForTerm >= vote.getTerm(): "  + raft);
+			logger.info("votedForTerm >= vote.getTerm(): "  + algo);
 			return false;
 		}
-		if (vote.getLastLogTerm() < raft.getILog().getLastTerm()) {
-			logger.info("vote.getLastLogTerm() < raft.getLog().getLastTerm(): "  + raft);
+		if (vote.getLastLogTerm() < algo.getILog().getLastTerm()) {
+			logger.info("vote.getLastLogTerm() < raft.getLog().getLastTerm(): "  + algo);
 			return false;
 		}
-		if (vote.getLastLogIndex() < raft.getILog().getLastIndex()) {
-			logger.info("vote.getLastLogIndex() < raft.getLog().getLastIndex(): "  + raft);
+		if (vote.getLastLogIndex() < algo.getILog().getLastIndex()) {
+			logger.info("vote.getLastLogIndex() < raft.getLog().getLastIndex(): "  + algo);
 			return false;
 		}
 		this.votedForTerm = vote.getTerm();
-		logger.info("setting voted for: " + this.votedForTerm + ": " + raft);
+		logger.info("setting voted for: " + this.votedForTerm + ": " + algo);
 		return true;
 	}
 

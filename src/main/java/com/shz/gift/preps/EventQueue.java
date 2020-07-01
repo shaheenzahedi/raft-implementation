@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.shz.gift.utils.ElectionLogic;
 import com.shz.gift.utils.NotLeaderException;
-import com.shz.gift.executor.Handler;
-import com.shz.gift.executor.QueueTask;
+import com.shz.gift.handler.IHandler;
+import com.shz.gift.handler.QueueTask;
 import com.shz.gift.protocol.AppendRequest;
 import com.shz.gift.protocol.AppendResponse;
 import com.shz.gift.protocol.ClientRequest;
@@ -21,11 +21,11 @@ import com.shz.gift.protocol.RaftEvent.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RaftEventQueue implements RaftListener, Handler<RaftEvent> {
+public class EventQueue implements IListener, IHandler<RaftEvent> {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
-	private final Raft raft;
+	private final Algo algo;
 
 	private final ScheduledExecutorService executor;
 
@@ -35,14 +35,14 @@ public class RaftEventQueue implements RaftListener, Handler<RaftEvent> {
 	
 	private boolean running = true;
 
-	public RaftEventQueue(Raft raft, ScheduledExecutorService executor) {
+	public EventQueue(Algo algo, ScheduledExecutorService executor) {
 		super();
-		this.raft = raft;
+		this.algo = algo;
 		this.executor = executor;
 	}
 
 	public void setMembers(List<IMember> remoteMembers) {
-		raft.setMembers(remoteMembers);
+		algo.setMembers(remoteMembers);
 	}
 
 	public void init() {
@@ -56,7 +56,7 @@ public class RaftEventQueue implements RaftListener, Handler<RaftEvent> {
 				loopEvent.scheduleCounter.incrementAndGet();
 				executor.schedule(loopEvent, l, TimeUnit.MILLISECONDS);				
 			} else {
-				logger.error("did not schedule loop for: " + raft);
+				logger.error("did not schedule loop for: " + algo);
 			}
 		}
 	}
@@ -65,40 +65,40 @@ public class RaftEventQueue implements RaftListener, Handler<RaftEvent> {
 	public void handleEvent(RaftEvent e) {
 		if (!running) {
 			if (e.getType() == EventType.CLIENT_REQUEST) {
-				e.getClientSource().send(raft, new ClientResponse(301, null));
+				e.getClientSource().send(algo, new ClientResponse(301, null));
 			}
 			return;
 		}
 		switch (e.getType()) {
 		case APPEND:
 			AppendRequest ar = (AppendRequest) e.getEvent();
-			boolean appended = raft.append(ar);
+			boolean appended = algo.append(ar);
 			if (ar.getPayload() != null) {
-				logger.info("appended: " + appended + " i=" + ar.getIndex() + " t=" + ar.getLogTerm() + " " + raft);
+				logger.info("appended: " + appended + " i=" + ar.getIndex() + " t=" + ar.getLogTerm() + " " + algo);
 				e.getSource().getChannel()
-					.send(raft, new AppendResponse(raft.getTerm().getCurrent(), appended, ar.getIndex(), ar.getLogTerm()));
+					.send(algo, new AppendResponse(algo.getTerm().getCurrent(), appended, ar.getIndex(), ar.getLogTerm()));
 			} else {
-				logger.info("ping received: i=" + ar.getIndex() + " t=" + ar.getLeaderTerm() + " " + raft);
+				logger.info("ping received: i=" + ar.getIndex() + " t=" + ar.getLeaderTerm() + " " + algo);
 			}
 			break;
 		case APPEND_RESPONSE:
-			raft.handleResponse(e.getSource(), (AppendResponse)e.getEvent());
-			logger.info("append responded: " + e.getEvent() + " " + raft);
+			algo.handleResponse(e.getSource(), (AppendResponse)e.getEvent());
+			logger.info("append responded: " + e.getEvent() + " " + algo);
 			break;
 		case REQUEST_VOTE:
 			RequestForVote rfv = (RequestForVote) e.getEvent();
-			if (raft.getElection().vote(e.getSource(), rfv)) {
+			if (algo.getElection().vote(e.getSource(), rfv)) {
 				logger.info("Voted for: " + rfv);
-				e.getSource().getChannel().send(raft, new VoteGranted(rfv.getTerm()));
+				e.getSource().getChannel().send(algo, new VoteGranted(rfv.getTerm()));
 			} else {
 				logger.info("Vote declined: " + rfv);
 			}
 			break;
 		case VOTE_GRANTED:
-			raft.getElection().voteReceived((VoteGranted) e.getEvent());
+			algo.getElection().voteReceived((VoteGranted) e.getEvent());
 			break;
 		case LOOP:
-			long l = raft.loop();
+			long l = algo.loop();
 			if (l < 1) {
 				l = ElectionLogic.PING_LOOP;
 			} else if (l > ElectionLogic.PING_LOOP) {
@@ -108,10 +108,10 @@ public class RaftEventQueue implements RaftListener, Handler<RaftEvent> {
 			break;
 		case CLIENT_REQUEST:
 			try {
-				raft.handleClientRequest(e.getClientSource(), e.getEvent());
+				algo.handleClientRequest(e.getClientSource(), e.getEvent());
 			} catch (NotLeaderException ex) {
 				logger.warn("Not a leader: " + e + ": " + ex, ex);
-				e.getClientSource().send(raft, new ClientResponse(301, null));
+				e.getClientSource().send(algo, new ClientResponse(301, null));
 			}
 			break;
 		}
@@ -161,8 +161,8 @@ public class RaftEventQueue implements RaftListener, Handler<RaftEvent> {
 		return running;
 	}
 
-	public Raft getRaft() {
-		return raft;
+	public Algo getAlgo() {
+		return algo;
 	}
 
 	public int getQueueSize() {
@@ -173,7 +173,7 @@ public class RaftEventQueue implements RaftListener, Handler<RaftEvent> {
 	
 	@Override
 	public String getName() {
-		return "(" + raft + ")" ;
+		return "(" + algo + ")" ;
 	}
 
 

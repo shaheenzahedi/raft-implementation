@@ -3,7 +3,7 @@ package com.shz.gift.log;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.shz.gift.utils.CommitHandler;
+import com.shz.gift.handler.ICommitHandler;
 import com.shz.gift.utils.Term;
 import com.shz.gift.protocol.AppendRequest;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class LogImpl implements ILog {
 	
 	protected IWriter writer;
 	
-	protected CommitHandler handler;
+	protected ICommitHandler handler;
 	
 	public LogImpl(Term term) {
 		super();
@@ -171,11 +171,11 @@ public class LogImpl implements ILog {
 	}
 
 	@Override
-	public void setCommitHandler(CommitHandler cm) {
+	public void setCommitHandler(ICommitHandler cm) {
 		this.handler = cm;
 	}
 
-	public CommitHandler getHandler() {
+	public ICommitHandler getHandler() {
 		return handler;
 	}
 

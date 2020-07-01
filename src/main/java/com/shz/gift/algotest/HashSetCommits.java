@@ -5,7 +5,7 @@ import com.shz.gift.protocol.AppendRequest;
 import java.util.HashSet;
 import java.util.Set;
 
-public class HashSetCommits extends RespondingCommitHandler {
+public class HashSetCommits extends RespondingICommitHandler {
     private final Set<Object> commitSet = new HashSet<>();
 
     @Override

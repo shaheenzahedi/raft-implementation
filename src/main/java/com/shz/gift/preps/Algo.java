@@ -3,6 +3,7 @@ package com.shz.gift.preps;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.shz.gift.handler.ICommitHandler;
 import com.shz.gift.log.ILog;
 import com.shz.gift.log.LogImpl;
 import com.shz.gift.protocol.AppendRequest;
@@ -12,7 +13,7 @@ import com.shz.gift.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Raft {
+public class Algo {
 
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -202,7 +203,7 @@ public class Raft {
 	}
 
 
-	public void setCommitHandler(CommitHandler cm) {
+	public void setCommitHandler(ICommitHandler cm) {
 		ILog.setCommitHandler(cm);
 	}
 

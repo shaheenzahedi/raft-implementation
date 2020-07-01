@@ -1,9 +1,9 @@
 package com.shz.gift.algotest;
-import com.shz.gift.utils.CommitHandler;
+import com.shz.gift.handler.ICommitHandler;
 import com.shz.gift.protocol.AppendRequest;
 import com.shz.gift.protocol.ClientResponse;
 
-public class RespondingCommitHandler implements CommitHandler {
+public class RespondingICommitHandler implements ICommitHandler {
 
     @Override
     public void commit(AppendRequest entry) {

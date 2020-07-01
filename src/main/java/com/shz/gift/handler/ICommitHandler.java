@@ -1,14 +1,14 @@
-package com.shz.gift.utils;
+package com.shz.gift.handler;
 
 import com.shz.gift.protocol.AppendRequest;
 
-public interface CommitHandler {
+public interface ICommitHandler {
 
 	/**
 	 * Commits the entry. Should NEVER fail. Retry should be handled by CommitHandler implementation
 	 * @param entry
 	 */
-	public void commit(AppendRequest entry);
+	void commit(AppendRequest entry);
 	
-	public void reject(AppendRequest entry);
+	void reject(AppendRequest entry);
 }

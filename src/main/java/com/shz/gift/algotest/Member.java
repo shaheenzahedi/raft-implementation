@@ -1,20 +1,20 @@
 package com.shz.gift.algotest;
 
-import com.shz.gift.preps.RaftEventQueue;
+import com.shz.gift.preps.EventQueue;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Member {
-    private final RaftEventQueue raftListener;
+    private final EventQueue raftListener;
     private final List<RemoteStub> remotes = new ArrayList<>();
 
-    public Member(RaftEventQueue queue) {
+    public Member(EventQueue queue) {
         super();
         this.raftListener = queue;
     }
 
-    public RaftEventQueue getRaftListener() {
+    public EventQueue getRaftListener() {
         return raftListener;
     }
 

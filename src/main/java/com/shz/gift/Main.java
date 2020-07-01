@@ -5,8 +5,12 @@ import com.shz.gift.algotest.Trigger;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args)  {
         Trigger trigger = new Trigger();
-        trigger.start();
+        try {
+            trigger.start();
+        } catch (InterruptedException ignored) {
+
+        }
     }
 }

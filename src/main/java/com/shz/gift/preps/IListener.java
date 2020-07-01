@@ -5,7 +5,7 @@ import com.shz.gift.protocol.ClientRequest;
 import com.shz.gift.protocol.IMsg;
 import com.shz.gift.protocol.RequestForVote;
 import com.shz.gift.protocol.VoteGranted;
-public interface RaftListener {
+public interface IListener {
     void voteReceived(IMember member, VoteGranted vote);
 
     void append(IMember source, AppendRequest entry);

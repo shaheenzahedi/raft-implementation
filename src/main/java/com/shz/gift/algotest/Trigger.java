@@ -9,9 +9,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.shz.gift.preps.IMember;
-import com.shz.gift.preps.Raft;
-import com.shz.gift.preps.RaftEventQueue;
-import com.shz.gift.executor.SequentialExecutor;
+import com.shz.gift.preps.Algo;
+import com.shz.gift.preps.EventQueue;
+import com.shz.gift.handler.SequentialExecutor;
 import com.shz.gift.log.LogImpl;
 import com.shz.gift.protocol.ClientRequest;
 import com.shz.gift.utils.ElectionLogic;
@@ -42,10 +42,10 @@ public class Trigger {
         System.setProperty("org.slf4j.simpleLogger.logFile", "raft.log");
         logger = LoggerFactory.getLogger(getClass());
         for (int i = 0; i < 3; i++) {
-            Raft r = new Raft();
+            Algo r = new Algo();
             r.setId("" + i);
             r.setCommitHandler(new HashSetCommits());
-            RaftEventQueue q = new RaftEventQueue(r, executor);
+            EventQueue q = new EventQueue(r, executor);
             Member ms = new Member(q);
             members.add(ms);
         }
@@ -104,7 +104,7 @@ public class Trigger {
         }
         leader = getLeader(null);
         assert leader != null;
-        HashSetCommits commits = (HashSetCommits) ((LogImpl) leader.getRaftListener().getRaft().getILog()).getHandler();
+        HashSetCommits commits = (HashSetCommits) ((LogImpl) leader.getRaftListener().getAlgo().getILog()).getHandler();
         for (Request r : requests) {
             if (!commits.getCommitSet().contains(r.getPayload())) System.out.println();
             assert r.getErr() != 0 || commits.getCommitSet().contains(r.getPayload()) : "" + r.getErr() + " missing: " + r.getPayload();
@@ -114,18 +114,18 @@ public class Trigger {
         if (System.currentTimeMillis() > nextFail) {
             nextFail = System.currentTimeMillis() + random.nextInt(30000);
             int i = random.nextInt(members.size());
-            if (members.get(i).getRaftListener().getRaft().getRole() != Role.LEADER) {
+            if (members.get(i).getRaftListener().getAlgo().getRole() != Role.LEADER) {
                 i = random.nextInt(members.size());
-                if (members.get(i).getRaftListener().getRaft().getRole() != Role.LEADER) {
+                if (members.get(i).getRaftListener().getAlgo().getRole() != Role.LEADER) {
                     i = random.nextInt(members.size());
                 }
             }
             final Member m = members.get(i);
-            System.out.println("stopping: " + m.getRaftListener().getRaft());
+            System.out.println("stopping: " + m.getRaftListener().getAlgo());
             m.getRaftListener().stop();
             long time = 1;
             executor.schedule(() -> {
-                System.out.println("starting: " + m.getRaftListener().getRaft());
+                System.out.println("starting: " + m.getRaftListener().getAlgo());
                 m.getRaftListener().init();
 
             }, random.nextInt(6000) + time, TimeUnit.MILLISECONDS);
@@ -134,11 +134,11 @@ public class Trigger {
 
 
     private Member getLeader(Member leader) {
-        if (leader != null && leader.getRaftListener().getRaft().getRole() == Role.LEADER && leader.getRaftListener().isRunning()) {
+        if (leader != null && leader.getRaftListener().getAlgo().getRole() == Role.LEADER && leader.getRaftListener().isRunning()) {
             return leader;
         }
         for (Member m : members) {
-            if (m.getRaftListener().getRaft().getRole() == Role.LEADER && m.getRaftListener().isRunning()) {
+            if (m.getRaftListener().getAlgo().getRole() == Role.LEADER && m.getRaftListener().isRunning()) {
                 return m;
             }
         }

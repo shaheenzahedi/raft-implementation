@@ -1,8 +1,8 @@
 package com.shz.gift.algotest;
 
 import com.shz.gift.preps.IMember;
-import com.shz.gift.preps.Raft;
-import com.shz.gift.preps.RaftEventQueue;
+import com.shz.gift.preps.Algo;
+import com.shz.gift.preps.EventQueue;
 import com.shz.gift.protocol.*;
 import org.slf4j.Logger;
 
@@ -17,11 +17,11 @@ public class RemoteStub implements IMember {
     private RemoteStub routeBack;
     private final Random random = new Random();
 
-    public RaftEventQueue getRaftListener() {
+    public EventQueue getRaftListener() {
         return raftListener;
     }
 
-    private final RaftEventQueue raftListener;
+    private final EventQueue raftListener;
 
     private final IMsg channel = new ChannelStub();
 
@@ -30,7 +30,7 @@ public class RemoteStub implements IMember {
 
     private long lastCmd = System.currentTimeMillis();
 
-    public RemoteStub(RaftEventQueue raftListener, Logger logger, ScheduledExecutorService executor) {
+    public RemoteStub(EventQueue raftListener, Logger logger, ScheduledExecutorService executor) {
         super();
         this.raftListener = raftListener;
         this.executor = executor;
@@ -73,7 +73,7 @@ public class RemoteStub implements IMember {
     }
 
     public String toString() {
-        return "Member-" + raftListener.getRaft();
+        return "Member-" + raftListener.getAlgo();
     }
 
     public void setRouteBack(RemoteStub routeBack) {
@@ -83,7 +83,7 @@ public class RemoteStub implements IMember {
     private class ChannelStub implements IMsg {
 
         @Override
-        public void send(final Raft source, final Object o) {
+        public void send(final Algo source, final Object o) {
 
             int delay = 25;
             if (o instanceof AppendRequest) {

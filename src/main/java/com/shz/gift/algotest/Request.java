@@ -1,6 +1,6 @@
 package com.shz.gift.algotest;
 
-import com.shz.gift.preps.Raft;
+import com.shz.gift.preps.Algo;
 import com.shz.gift.protocol.ClientResponse;
 import com.shz.gift.protocol.IMsg;
 
@@ -22,7 +22,7 @@ public class Request implements IMsg {
     }
 
     @Override
-    public void send(Raft r, Object o) {
+    public void send(Algo r, Object o) {
         ClientResponse resp = (ClientResponse) o;
         err = resp.getErrCode();
         if (err == 0) {
